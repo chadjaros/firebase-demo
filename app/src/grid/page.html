@@ -1,0 +1,5 @@
+<div style="padding: 1em">
+    <div ng-repeat="it in items" style="float:left;{{$index % K() == 0 ? 'clear:left' : ''}}">
+         <md-button class="md-raised" style="background-color:{{it.state}}" ng-click="iterateState(it)" >{{it.id}}</md-button>
+    </div>
+</div>

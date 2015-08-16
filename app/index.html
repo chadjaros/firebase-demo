@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Firebase Demo</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <link rel="stylesheet" href="./bower_components/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="assets/app.css"/>
+  </head>
+
+  <body ng-app="firebaseApp" layout="row" ng-controller="NavController">
+
+  <md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2"
+                md-component-id="left"
+                md-is-locked-open="$mdMedia('gt-sm')">
+
+    <md-toolbar class="md-whiteframe-z1">
+      <h1>Features</h1>
+    </md-toolbar>
+
+    <md-list>
+        <md-list-item >
+            <md-button ng-click="go('/grid')" ng-class="{'selected' : at('/grid') }">
+                Grid
+            </md-button>
+        </md-list-item>
+        <md-list-item>
+            <md-button ng-click="go('/draw')" ng-class="{'selected' : at('/draw') }">
+                Draw
+            </md-button>
+        </md-list-item>
+    </md-list>
+
+  </md-sidenav>
+
+
+  <div flex layout="column" tabIndex="-1" role="main" class="md-whiteframe-z2">
+
+    <md-toolbar layout="row" class="md-whiteframe-z1">
+      <md-button class="menu" hide-gt-sm ng-click="toggleNav()" aria-label="Show User List">
+        <md-icon md-svg-icon="menu" ></md-icon>
+      </md-button>
+      <h1>Firebase Demo </h1>
+        <ng-md-icon
+                icon="{{connected ? 'cast_connected' : 'error'}}"
+                style="fill:{{connected ? '#fff' : '#EF9A9A'}};padding:1em"></ng-md-icon>
+    </md-toolbar>
+
+    <md-content flex id="content">
+        <div ng-view>
+
+        </div>
+        <!--<md-icon md-svg-icon="{{ul.selected.avatar}}" class="avatar"></md-icon>
+        <h2>{{ul.selected.name}}</h2>
+        <p>{{ul.selected.content}}</p>
+
+        <md-button class="contact" md-no-ink ng-click="ul.showContactOptions($event)" aria-label="Contact User">
+          <md-tooltip>Contact {{ ul.selected.name }}</md-tooltip>
+          <md-icon md-svg-icon="share"></md-icon>
+        </md-button>-->
+    </md-content>
+
+  </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="./bower_components/angular/angular.js"></script>
+    <script src="./bower_components/angular-animate/angular-animate.js"></script>
+    <script src="./bower_components/angular-route/angular-route.js"></script>
+    <script src="./bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="./bower_components/angular-material/angular-material.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/SVG-Morpheus/0.1.8/svg-morpheus.js"></script>
+
+    <script src="src/jsBezier-0.6.js"></script>
+    <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+    <script src="src/firebase/FirebaseModule.js"></script>
+    <script src="src/nav/NavModule.js"></script>
+    <script src="src/draw/DrawModule.js"></script>
+    <script src="src/grid/GridModule.js"></script>
+
+    <script src="./src/users/Users.js"></script>
+    <script src="./src/users/UserController.js"></script>
+    <script src="./src/users/UserService.js"></script>
+
+    <script type="text/javascript">
+
+          var app = angular.module('firebaseApp', ['ngMaterial', 'users', 'ngRoute', 'ngMdIcons', 'nav', 'firebase', 'grid', 'draw']);
+
+          app.config(function($mdThemingProvider, $mdIconProvider){
+
+                  $mdIconProvider
+                      .defaultIconSet("./assets/svg/avatars.svg", 128)
+                      .icon("menu"       , "./assets/svg/menu.svg"        , 24)
+                      .icon("share"      , "./assets/svg/share.svg"       , 24)
+                      .icon("google_plus", "./assets/svg/google_plus.svg" , 512)
+                      .icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
+                      .icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
+                      .icon("phone"      , "./assets/svg/phone.svg"       , 512);
+
+                      $mdThemingProvider.theme('default')
+                          .primaryPalette('blue-grey')
+                          .accentPalette('amber');
+
+              });
+
+        app.config(['$routeProvider', function($routeProvider) {
+            $routeProvider
+                    .when('/', {templateUrl: 'src/nav/welcome.html'})
+                    .when('/grid', {templateUrl: 'src/grid/page.html', controller:'GridController'})
+                    .when('/draw', {templateUrl: 'src/draw/page.html', controller:'DrawController'})
+                    .otherwise({redirectTo: '/'});
+        }]);
+    </script>
+
+  </body>
+</html>
