@@ -1,14 +1,33 @@
-# firebase-demo
+## Live demo
 
-##Instructions:
+Test it live: [https://chadjaros-demo.firebaseapp.com/#/](https://chadjaros-demo.firebaseapp.com/#/)
 
-###Install tools
+## Play with the code
 
-install git: http://git-scm.com/
-install node.js: http://nodejs.org/
-install python: http://www.python.org/
-install bower: ```npm install -g bower```
-install http-server: ```npm install -g http-server```
+### Install tools
+
+install git: [http://git-scm.com/](http://git-scm.com/)
+
+install node.js: [http://nodejs.org/](http://nodejs.org/)
+
+install python: [http://www.python.org/](http://www.python.org/)
+
+install bower:
+
+	npm install -g bower
+
+install grunt:
+
+	npm install -g grunt
+	npm install -g grunt-cli
+
+install http-server or live-server:
+
+	npm install -g http-server
+
+or
+
+	npm install -g live-server
 
 ### Set up  app (first time only)
 
@@ -16,7 +35,7 @@ Clone the app from github
 
 	git clone https://github.com/chadjaros/firebase-demo.git
 	
-From firebase-demo directory
+cd into firebase-demo directory and run
 
 	npm install
 	
@@ -25,8 +44,12 @@ From firebase-demo directory
 From firebase-demo directory
 
 	http-server
+
+or
+
+	live-server
 	
-Open ```http://localhost:8080/app``` in browser of choice
+Open [http://localhost:8080/app/#/](http://localhost:8080/app/#/) in browser of choice
 
 #### Other
 

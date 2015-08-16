@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
     <link rel="stylesheet" href="./bower_components/angular-material/angular-material.css"/>
     <link rel="stylesheet" href="assets/app.css"/>
     <link rel='stylesheet' href='assets/spectrum.css' />
@@ -26,6 +26,11 @@
     </md-toolbar>
 
     <md-list>
+        <md-list-item >
+            <md-button ng-click="go('/')" ng-class="{'selected' : at('/') }">
+                Home
+            </md-button>
+        </md-list-item>
         <md-list-item >
             <md-button ng-click="go('/grid')" ng-class="{'selected' : at('/grid') }">
                 Grid
