@@ -1,7 +1,10 @@
 <div>
+    <canvas class="fire-draw-canvas" style="border: 1px solid #999" width="600" height="400"></canvas>
     <div>
         <md-button class="md-raised" ng-class="{'md-accent md-hue-3': currentTool == TOOL_DRAW()}" ng-click="currentTool = TOOL_DRAW()">Draw</md-button>
+
+        <input type="text" class="color" ng-model="currentColor" />
+
         <md-button class="md-raised" ng-class="{'md-accent md-hue-3': currentTool == TOOL_ERASER()}" ng-click="currentTool = TOOL_ERASER()">Erase</md-button>
     </div>
-    <canvas class="fire-draw-canvas" style="border: 1px solid #999" width="600" height="400"></canvas>
 </div>
