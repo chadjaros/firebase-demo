@@ -19,6 +19,8 @@
                     var canvas = $(element).find('canvas').get(0);
                     var ctx = canvas.getContext('2d');
 
+                    ctx.lineWidth = 1.5;
+
                     var fireError = function(error) {
                         if(error) {
                             $mdToast.show(
@@ -33,6 +35,25 @@
 
                     var clear = function() {
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    };
+
+                    var drawLine = function(p0, p1, tempStyle, tempWidth) {
+                        var baseStyle = ctx.strokeStyle;
+                        var baseWidth = ctx.lineWidth;
+
+                        if(tempStyle) {
+                            ctx.strokeStyle = tempStyle;
+                        }
+                        if(tempWidth) {
+                            ctx.lineWidth = tempWidth;
+                        }
+                        ctx.beginPath();
+                        ctx.moveTo(p0.x, p0.y);
+                        ctx.lineTo(p1.x, p1.y);
+                        ctx.stroke();
+
+                        ctx.strokeStyle = baseStyle;
+                        ctx.lineWidth = baseWidth;
                     };
 
                     var drawCurve = function(curve){
@@ -82,13 +103,13 @@
                     };
 
                     var drawProgress = function(partial) {
+                        var color = '#4DD0E1';
+                        drawLine(partial.p1, flipPoint(partial.p1, partial.p0), color,.5);
                         if(drawing === 'p0') {
-                            ctx.beginPath();
-                            ctx.moveTo(partial.p0.x, partial.p0.y);
-                            ctx.lineTo(partial.p1.x, partial.p1.y);
-                            ctx.stroke();
+                            drawLine(partial.p0, partial.p1);
                         }
                         else {
+                            drawLine(partial.p2, flipPoint(partial.p2, partial.p3), color,.5);
                             drawCurve(partial);
                         }
                     };
@@ -117,41 +138,53 @@
                         }
                     };
 
+                    // Returns a point that has been flipped on the X and Y
+                    // axis about the origin point.
+                    var flipPoint = function(point, origin) {
+                        var dx = origin.x - point.x;
+                        var dy = origin.y - point.y;
+                        return result = {
+                            x: origin.x + dx,
+                            y: origin.y + dy
+                        };
+                    };
+
                     $(canvas).on('mousedown', function(event){
+                        var point = extractPoint(event);
                         if($scope.currentTool === $scope.TOOL_DRAW()) {
                             if (!newCurve.p3) {
-                                newCurve.p0 = extractPoint(event);
-                                newCurve.p1 = extractPoint(event);
+                                newCurve.p0 = point;
+                                newCurve.p1 = point;
                                 drawing = 'p0';
                             }
                             else {
-                                newCurve.p2 = extractPoint(event);
-                                newCurve.p3 = extractPoint(event);
+                                newCurve.p2 = point;
+                                newCurve.p3 = point;
                                 drawing = 'p2';
                             }
                         }
                         else {
                             drawing = false;
                             newCurve = {};
-                            eraseCurve(extractPoint(event));
+                            eraseCurve(point);
                         }
                     });
 
                     $(canvas).on('mouseup', function(event){
+                        var point = extractPoint(event);
                         if($scope.currentTool === $scope.TOOL_DRAW()) {
                             if(!newCurve.p0) {
                                 newCurve = {};
                                 drawing = false;
                             }
                             else if (!newCurve.p3) {
-                                newCurve.p1 = extractPoint(event);
-                                newCurve.p2 = extractPoint(event);
-                                newCurve.p3 = extractPoint(event);
+                                newCurve.p1 = point;
+                                newCurve.p2 = point;
+                                newCurve.p3 = point;
                                 drawing = 'p3';
                             }
                             else {
                                 drawing = false;
-                                newCurve.p2 = extractPoint(event);
                                 if(firebaseService.isConnected()) {
                                     firebaseService.draw.push(newCurve, fireError);
                                 }
@@ -169,17 +202,18 @@
                     });
 
                     $(canvas).on('mousemove', function(event) {
+                        var point = extractPoint(event);
                         if ($scope.currentTool === $scope.TOOL_DRAW()) {
                             if (drawing) {
                                 if (drawing === 'p0') {
-                                    newCurve.p1 = extractPoint(event);
+                                    newCurve.p1 = point;
                                 }
                                 else if (drawing === 'p3') {
-                                    newCurve.p2 = extractPoint(event);
-                                    newCurve.p3 = extractPoint(event);
+                                    newCurve.p2 = point;
+                                    newCurve.p3 = point;
                                 }
                                 else {
-                                    newCurve.p2 = extractPoint(event);
+                                    newCurve.p2 = flipPoint(point, newCurve.p3);
                                 }
                                 redrawAll();
                             }

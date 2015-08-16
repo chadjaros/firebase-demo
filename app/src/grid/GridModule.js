@@ -15,14 +15,16 @@
             if(!$scope.$$phase) { $scope.$apply(); }
         };
 
-        var errorToast = function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('Error syncing with server')
-                    .position('bottom right')
-                    .hideDelay(3000)
-                    .theme('error-toast')
-            );
+        var fireError = function(error) {
+            if(error) {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .content('Error syncing with server')
+                        .position('bottom right')
+                        .hideDelay(3000)
+                        .theme('error-toast')
+                );
+            }
         };
 
         var nextState = function(state) {
@@ -39,10 +41,9 @@
             return states[next];
         };
 
-        $scope.iterateState = function(item) {
-
+        var save = function(item, newState) {
             if(!firebaseService.isConnected()) {
-                errorToast();
+                fireError(true);
                 return;
             }
 
@@ -50,20 +51,55 @@
             // 1: angular objects have $$hashCode property which doesn't play nice with firebase
             // 2: Don't want to update the object proper until we get the update from
             //    firebase that set() operation was a success
-            var copy = { id: item.id, state: nextState(item.state) };
+            var copy = { id: item.id, state: newState };
 
             if(!firebaseRefs[item.id]) {
-                firebaseRefs[item.id] = firebaseService.grid.child(item.id.toString());
+                firebaseRefs[item.id] = firebaseService.grid.child(item.id);
             }
-            firebaseRefs[item.id].set(copy, function(error) {
-                if(error) {
-                    errorToast();
-                }
-                else {
-                    item.state = copy.state;
-                    tryApply();
-                }
-            });
+            firebaseRefs[item.id].set(copy, fireError);
+        };
+
+        $scope.iterateState = function(item) {
+
+            save(item, nextState(item.state));
+        };
+
+        $scope.clear = function() {
+            for(var it in items) {
+                save(items[it], states[0]);
+            }
+        };
+
+        var blitzStart = 0;
+        var blitzCancel = null;
+        var blitzDuration = 2000;
+        $scope.blitz = function() {
+            blitzStart = Date.now();
+            clearBlitz();
+            blitzCancel = setInterval(executeBlitz, 10);
+        };
+
+        var executeBlitz = function() {
+            if(!firebaseService.isConnected()) {
+                fireError(true);
+                clearBlitz();
+                return;
+            }
+            if(blitzStart < Date.now() - 2000) {
+                clearBlitz();
+                return;
+            }
+
+            var idx = Math.floor(Math.random() * items.length);
+            console.log(idx);
+            $scope.iterateState(items[idx]);
+        };
+
+        var clearBlitz = function() {
+            if(blitzCancel) {
+                clearInterval(blitzCancel);
+            }
+            blitzCancel = null;
         };
 
         // Load data from firebase
@@ -76,6 +112,7 @@
                 state: states[0]
             });
         }
+
         firebaseService.grid.on('child_added', function(snapshot, prevChild) {
             var item = snapshot.val();
             if (items.length > item.id) {
